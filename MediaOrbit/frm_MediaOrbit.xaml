@@ -1,0 +1,221 @@
+﻿<Window Name="frm_MediaOrbit" Title="Media Orbit"
+        x:Class="MediaOrbit.win_MediaOrbit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Height="300" Width="768"
+        Background="Gainsboro" WindowState="Maximized"
+        Closing="frm_MediaOrbit_Closing"
+        >
+    <DockPanel LastChildFill="True" Focusable="False">
+        <ToolBarTray DockPanel.Dock="Top" Focusable="False">
+            <ToolBar Focusable="False">
+                <Button Name="btn_RotateLeft" ToolTip="Rotate Left (F11)"
+                        Focusable="False"
+                        Click="btn_RotateLeft_Click"
+                        >
+                    <Image Source="i/icon16-rotateleft.png" />
+                </Button>
+                <Button Name="btn_RotateRight" ToolTip="Rotate Right (F12)"
+                        Focusable="False"
+                        Click="btn_RotateRight_Click"
+                        >
+                    <Image Source="i/icon16-rotateright.png" />
+                </Button>
+                <Separator />
+                <Button Name="btn_Rename" Content="Rename" ToolTip="Rename Files"
+                        Focusable="False"
+                        Click="btn_Rename_Click"
+                        >
+                </Button>
+            </ToolBar>
+            <ToolBar Focusable="False">
+                <Button Name="btn_GatherSubFolderFiles" Content="Gather Sub-folder Files" ToolTip="Gather Sub-folder Files"
+                        Focusable="False"
+                        Click="btn_GatherSubFolderFiles_Click"
+                        >
+                </Button>
+            </ToolBar>
+            <ToolBar Focusable="False">
+                <Button Name="btn_Backup" Content="Backup" ToolTip="Backup Info File"
+                        Focusable="False"
+                        Click="btn_Backup_Click"
+                        >
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="Auto" MinWidth="5" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="Auto" MinWidth="5" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Vertical splitters: -->
+            <GridSplitter Grid.Row="0" Grid.Column="1" Grid.RowSpan="5"
+                          Width="5"
+                          VerticalAlignment="Stretch"
+                          ResizeBehavior="PreviousAndNext"
+                          Background="#FFBCBCBC"
+                          />
+            <GridSplitter Grid.Row="0" Grid.Column="3" Grid.RowSpan="5"
+                          Width="5"
+                          VerticalAlignment="Stretch"
+                          ResizeBehavior="PreviousAndNext"
+                          Background="#FFBCBCBC"
+                          />
+
+            <!-- Content: -->
+
+            <DockPanel Name="pnl_Browser"
+                       Grid.Column="0"
+                       Margin="8"
+                       LastChildFill="True"
+                       >
+                <TextBlock Name="text_Header_Browser"
+                           DockPanel.Dock="Top"
+                           Margin="0,0,0,8"
+                           Text="Browser"
+                           FontWeight="Black"
+                           />
+                <TextBox Name="text_CurrentPath"
+                         DockPanel.Dock="Top"
+                         Margin="0,0,0,8"
+                         IsReadOnly="true"
+                         TextChanged="text_CurrentPath_TextChanged" Focusable="False"
+                         />
+                <Button Name="btn_UpOneLevel"
+                        DockPanel.Dock="Top"
+                        Margin="0,0,0,8" Padding="4"
+                        Click="btn_UpOneLevel_Click"
+                        >
+                    Up One Level
+                </Button>
+                <ListView Name="list_FolderBrowser"
+                          BorderBrush="Black"
+                          ItemsSource="{Binding}"
+                          Grid.Row="2"
+                          Margin="0"
+                          MouseDoubleClick="list_FolderBrowser_MouseDoubleClick"
+                          SelectionChanged="list_FolderBrowser_SelectionChanged"
+                          KeyUp="list_FolderBrowser_KeyUp"
+                          >
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" Width="160">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding ImagePath}" Margin="0,0,12,0" />
+                                            <TextBlock Text="{Binding Name}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Size}" Width="Auto" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+
+            <DockPanel Name="pnl_Info" Grid.Column="2" Margin="8">
+                <TextBlock Name="text_Header_Info"
+                           DockPanel.Dock="Top"
+                           Margin="0,0,0,8"
+                           Text="Info"
+                           FontWeight="Black"
+                           />
+                <TextBox Name="text_PathedFileName_Info"
+                         DockPanel.Dock="Top"
+                         Margin="0,0,0,8"
+                         IsReadOnly="True"
+                         TextChanged="text_PathedFileName_Displayed_TextChanged"
+                         />
+                <Button Name="btn_CreateInfoFile" Content="Create Info File"
+                        DockPanel.Dock="Top"
+                        Margin="0,0,0,8" Padding="4" Click="btn_CreateInfoFile_Click"
+                        />
+                <Button Name="btn_AddRow" Content="Add Row"
+                        DockPanel.Dock="Bottom"
+                        Margin="0,8,0,0" Padding="4"
+                        Click="btn_AddRow_Click"
+                        />
+                <TextBox Name="text_Info"
+                         Grid.Row="3"
+                         Height="Auto"
+                         Margin="0,0,0,0"
+                         AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"
+                         />
+            </DockPanel>
+
+            <Grid Grid.Column="4" Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Name="text_Header_Viewer"
+                           Grid.Row="0"
+                           Margin="0,0,0,8"
+                           Text="Viewer"
+                           FontWeight="Black"
+                           />
+                <TextBox Name="text_PathedFileName_Displayed"
+                         Grid.Row="1"
+                         Margin="0,0,0,8"
+                         VerticalAlignment="Top"
+                         IsReadOnly="True"
+                         TextChanged="text_PathedFileName_Displayed_TextChanged"
+                         />
+                <Image Name="img_01"
+                       Grid.Row="2"
+                       Margin="6,6,6,6"
+                       />
+                <MediaElement Name="oMediaElement_01"
+                              Grid.Row="2"
+                              Margin="0"
+                              LoadedBehavior="Manual" UnloadedBehavior="Manual"
+                              />
+                <Slider Name="slide_Progress"
+                        Grid.Row="2"
+                        Margin="6,6,6,6"
+                        Visibility="Collapsed"
+                        Thumb.DragStarted="slide_Progress_DragStarted" Thumb.DragCompleted="slide_Progress_DragCompleted"
+                        />
+                <StackPanel Name="pnl_MediaCtrls"
+                            Grid.Row="4"
+                            Margin="6,6,6,6"
+                            VerticalAlignment="Bottom"
+                            Orientation="Horizontal" Height="35.96"
+                            Visibility="Collapsed"
+                            >
+                    <Button Name="btn_Play"
+                            Padding="4" Margin="4"
+                            Click="btn_Play_Click"
+                            >
+                        Play
+                    </Button>
+                    <Button Name="btn_Pause"
+                            Padding="4" Margin="4"
+                            Click="btn_Pause_Click"
+                            >
+                        Pause
+                    </Button>
+                    <Button Name="btn_Stop"
+                            Padding="4" Margin="4"
+                            Click="btn_Stop_Click"
+                            >
+                        Stop
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
