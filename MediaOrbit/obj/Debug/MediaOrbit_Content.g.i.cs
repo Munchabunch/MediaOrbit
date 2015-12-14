@@ -8,7 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("i/icon16-file.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("i/icon16-folder.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("i/mediaorbit.png")]
 
 

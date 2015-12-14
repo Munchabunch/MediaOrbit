@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -59,38 +60,46 @@ namespace MediaOrbit
 
         private void btn_RotateLeft_Click(object sender, RoutedEventArgs e)
         {
-            // DEBUG //
-            Prompt = "#201:\nThis feature is under development.";
-            MessageBox.Show(Prompt, "DEBUG", MessageBoxButton.OK, MessageBoxImage.Information);
+            string PathedFileName_Displayed = text_PathedFileName_Displayed.Text;
+
+            if (PathedFileName_Displayed.Length > 0)
+            {
+                Bitmap bitmap1 = (Bitmap)Bitmap.FromFile(PathedFileName_Displayed);
+                bitmap1.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                bitmap1.Save(@"C:\Users\Mike\Documents\test.jpeg", ImageFormat.Jpeg);
+                bitmap1.Save(PathedFileName_Displayed, ImageFormat.Jpeg);
+
+                // DEBUG //
+                Prompt = "#209:\nSaved:" + PathedFileName_Displayed;
+                //MessageBox.Show(Prompt, "DEBUG", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                DisplayBlankPic();
+
+                // I can't get this to work. //
+                //DisplayStillPic(PathedFileName_Displayed);
+            }
         }
 
         private void btn_RotateRight_Click(object sender, RoutedEventArgs e)
         {
-            // DEBUG //
-            Prompt = "#301:\nThis feature is under development.";
-            MessageBox.Show(Prompt, "DEBUG", MessageBoxButton.OK, MessageBoxImage.Information);
+            string PathedFileName_Displayed = text_PathedFileName_Displayed.Text;
 
-            System.Drawing.Image img_02;
-            EncoderParameters oEncoderParameters_01;
-            ImageCodecInfo oImageCodecInfo_01;
+            if (PathedFileName_Displayed.Length > 0)
+            {
+                Bitmap bitmap1 = (Bitmap)Bitmap.FromFile(PathedFileName_Displayed);
+                bitmap1.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                bitmap1.Save(@"C:\Users\Mike\Documents\test.jpeg", ImageFormat.Jpeg);
+                bitmap1.Save(PathedFileName_Displayed, ImageFormat.Jpeg);
 
-            oEncoderParameters_01 = new EncoderParameters(1);
-            oImageCodecInfo_01 = GetEncoderInfo("image/jpeg");
+                // DEBUG //
+                Prompt = "#309:\nSaved:" + PathedFileName_Displayed;
+                //MessageBox.Show(Prompt, "DEBUG", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            img_02 = System.Drawing.Image.FromFile(text_PathedFileName_Displayed.Text);
+                DisplayBlankPic();
 
-            // Rotate the image.
-            img_02.RotateFlip(System.Drawing.RotateFlipType.Rotate90FlipNone);
-
-            // WORKING //
-            // Unload the picture:
-            //img_01.Load(@"C:\Users\Mike\Pictures\Default.jpeg");
-            //img_01.Refresh();
-
-            // WORKING //
-            // Save the image to the file:
-            //oEncoderParameters_01.Param[0] = new EncoderParameter(Encoder.Quality, 75);
-            //img_02.Save(text_PathedFileName_Displayed.Text, oImageCodecInfo_01, oEncoderParameters_01);
+                // I can't get this to work. //
+                //DisplayStillPic(PathedFileName_Displayed);
+            }
         }
 
         private void btn_Rename_Click(object sender, RoutedEventArgs e)
@@ -187,7 +196,7 @@ namespace MediaOrbit
                     // Update the image:
                     BitmapImage oBmpImg_01 = new BitmapImage();
                     oBmpImg_01.BeginInit();
-                    oBmpImg_01.UriSource = new Uri(@"C:\Users\michael.adams4\Pictures\placeholder.png", UriKind.Relative);
+                    oBmpImg_01.UriSource = new Uri(@"C:\Users\Mike\Pictures\placeholder.png", UriKind.Relative);
                     oBmpImg_01.CacheOption = BitmapCacheOption.OnLoad;
                     oBmpImg_01.EndInit();
                     img_01.Source = oBmpImg_01;
@@ -415,12 +424,12 @@ namespace MediaOrbit
 
                     if (str_Line.StartsWith(str_FileTitle_Photo + " "))
                     {
-                        str_NewText += str_Line + textbox_TextToCopy_Selected.Text + "\n";
+                        str_NewText += str_Line + textbox_TextToCopy_Selected.Text + "\r\n";
                         i_LastChangedLineNum = i_LineNum;
                     }
                     else
                     {
-                        str_NewText += str_Line + "\n";
+                        str_NewText += str_Line + "\r\n";
                     }
                 } // Next i_LineNum
 
@@ -627,12 +636,29 @@ namespace MediaOrbit
         private void DisplayStillPic(string PathedFileName_ToDisplay)
         {
             // Update the image:
-            BitmapImage bmImage = new BitmapImage();
-            bmImage.BeginInit();
-            bmImage.CacheOption = BitmapCacheOption.OnLoad;
-            bmImage.UriSource = new Uri(PathedFileName_ToDisplay, UriKind.Absolute);
-            bmImage.EndInit();
-            img_01.Source = bmImage;
+            BitmapImage oBmpImg_01 = new BitmapImage();
+            oBmpImg_01.BeginInit();
+            oBmpImg_01.CacheOption = BitmapCacheOption.OnLoad;
+            oBmpImg_01.UriSource = new Uri(PathedFileName_ToDisplay, UriKind.Absolute);
+            oBmpImg_01.EndInit();
+            img_01.Source = oBmpImg_01;
+
+            // Make the appropriate controls visible:
+            img_01.Visibility = Visibility.Visible;
+            oMediaElement_01.Visibility = Visibility.Collapsed;
+            slide_Progress.Visibility = Visibility.Collapsed;
+            pnl_MediaCtrls.Visibility = Visibility.Collapsed;
+        }
+
+        private void DisplayBlankPic()
+        {
+            // Update the image:
+            BitmapImage oBmpImg_01 = new BitmapImage();
+            oBmpImg_01.BeginInit();
+            oBmpImg_01.CacheOption = BitmapCacheOption.OnLoad;
+            oBmpImg_01.UriSource = new Uri(@"C:\Users\Mike\Pictures\placeholder.png", UriKind.Relative);
+            oBmpImg_01.EndInit();
+            img_01.Source = oBmpImg_01;
 
             // Make the appropriate controls visible:
             img_01.Visibility = Visibility.Visible;
@@ -655,13 +681,21 @@ namespace MediaOrbit
             str_PathedFileName_Info = NormalizePath(text_CurrentPath.Text) + "info.txt";
 
             // Add the first lines to the file text:
-            str_InfoFileText = oFileInfo_Folder.Directory.Parent.Name + "-" + oFileInfo_Folder.Directory.Name.Substring(0, 2) + "-" + oFileInfo_Folder.Name + "\n";
-            str_InfoFileText = str_InfoFileText + "\n";
+            str_InfoFileText = oFileInfo_Folder.Directory.Parent.Name + "-" + oFileInfo_Folder.Directory.Name.Substring(0, 2) + "-" + oFileInfo_Folder.Name + "\r\n";
+            str_InfoFileText = str_InfoFileText + "\r\n";
 
             // Add the rest of the lines to the file text:
             for (i_PhotoNum = 1; i_PhotoNum <= list_FolderBrowser.Items.Count; i_PhotoNum++)
             {
-                str_InfoFileText = str_InfoFileText + i_PhotoNum.ToString("000") + " " + "\n";
+                string FileTitle = i_PhotoNum.ToString("000");
+                if (ImgExists(FileTitle))
+                {
+                    str_InfoFileText = str_InfoFileText + FileTitle + " " + "\r\n";
+                }
+                else if (VideoExists(FileTitle))
+                {
+                    str_InfoFileText = str_InfoFileText + FileTitle + " [movie] " + "\r\n";
+                }
             }
 
             text_Info.Text = str_InfoFileText;
@@ -671,6 +705,52 @@ namespace MediaOrbit
 
             // Display the new info file:
             DisplayInfo();
+        }
+
+        /// <summary>
+        /// Look for the specified image file in the folder browser
+        /// </summary>
+        /// <param name="FileTitle">the file title (without the extension), such as "002"</param>
+        /// <returns>true if the file exists in the folder browser with the "jpeg" or "jpeg" extension</returns>
+        private bool ImgExists(string FileTitle)
+        {
+            string FileName;
+            int i_Consecution;
+
+            for (i_Consecution = 0; i_Consecution < list_FolderBrowser.Items.Count; i_Consecution++)
+            {
+                DirectoryEntry entry = (DirectoryEntry)list_FolderBrowser.Items[i_Consecution];
+                FileName = entry.Name;
+
+                if (FileName == FileTitle + ".jpeg" || FileName == FileTitle + ".jpeg")
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Look for the specified video file in the folder browser
+        /// </summary>
+        /// <param name="FileTitle">the file title (without the extension), such as "002"</param>
+        /// <returns>true if the file exists in the folder browser with the "avi", "mov", "mp3", or "mp4" extension</returns>
+        private bool VideoExists(string FileTitle)
+        {
+            string FileName;
+            int i_Consecution;
+
+            for (i_Consecution = 0; i_Consecution < list_FolderBrowser.Items.Count; i_Consecution++)
+            {
+                DirectoryEntry entry = (DirectoryEntry)list_FolderBrowser.Items[i_Consecution];
+                FileName = entry.Name;
+
+                if (FileName == FileTitle + ".avi" || FileName == FileTitle + ".mov" || FileName == FileTitle + ".mp3" || FileName == FileTitle + ".mp4")
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

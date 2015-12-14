@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Height="300" Width="768"
         Background="Gainsboro" WindowState="Maximized"
-        Closing="frm_MediaOrbit_Closing"
+        Closing="frm_MediaOrbit_Closing" Icon="i/mediaorbit.png"
         >
     <DockPanel LastChildFill="True" Focusable="False">
         <ToolBarTray DockPanel.Dock="Top" Focusable="False">
@@ -116,7 +116,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Size}" Width="Auto" />
+                            <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Size}" Width="60" />
                         </GridView>
                     </ListView.View>
                 </ListView>
@@ -177,7 +177,8 @@
                 <Image Name="img_01"
                        Grid.Row="2"
                        Margin="6,6,6,6"
-                       />
+                       >
+                </Image>
                 <MediaElement Name="oMediaElement_01"
                               Grid.Row="2"
                               Margin="0"
@@ -186,7 +187,7 @@
                 <Slider Name="slide_Progress"
                         Grid.Row="2"
                         Margin="6,6,6,6"
-                        Visibility="Collapsed"
+                        Visibility="Visible"
                         Thumb.DragStarted="slide_Progress_DragStarted" Thumb.DragCompleted="slide_Progress_DragCompleted"
                         />
                 <StackPanel Name="pnl_MediaCtrls"
