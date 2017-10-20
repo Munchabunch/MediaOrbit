@@ -30,6 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -117,6 +118,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="i\mediaorbit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="i\icon32-file.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="i\icon12-file.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="i\icon12-folder.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

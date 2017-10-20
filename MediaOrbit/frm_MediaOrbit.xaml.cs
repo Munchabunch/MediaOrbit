@@ -141,7 +141,7 @@ namespace MediaOrbit
                             DirectoryEntry d = new DirectoryEntry(
                                 dir.Name, dir.FullName, "<Folder>", "",
                                 Directory.GetLastWriteTime(s),
-                                "i/icon16-file.png", EntryType.Dir
+                                "i/icon12-folder.png", EntryType.Dir
                                 );
                             subEntries.Add(d);
                         }
@@ -151,7 +151,7 @@ namespace MediaOrbit
                             DirectoryEntry d = new DirectoryEntry(
                                 file.Name, file.FullName, file.Extension, file.Length.ToString(),
                                 file.LastWriteTime,
-                                "i/icon16-file.png", EntryType.File
+                                "i/icon12-file.png", EntryType.File
                                 );
                             subEntries.Add(d);
                         }
@@ -242,6 +242,59 @@ namespace MediaOrbit
             else
             {
                 text_CurrentPath.Text = GetParentPath(text_CurrentPath.Text);
+            }
+        }
+
+        private void btn_Now_Click(object sender, RoutedEventArgs e)
+        {
+            string str_CurrentYear = DateTime.Now.Year.ToString();
+            string str_CurrentMonth = DateTime.Now.Month.ToString();
+            int ItemNum_01 = 0;
+            int ItemNum_02 = 0;
+
+            SaveInfoFile();
+
+            if (str_CurrentMonth.Length == 1) str_CurrentMonth = "0" + str_CurrentMonth;
+
+            // Set to the default path.
+            text_CurrentPath.Text = DeNormalizePath(Properties.Settings.Default["DefaultPath"].ToString());
+
+            // Look for the current year::
+            for (ItemNum_01 = 0; ItemNum_01 < list_FolderBrowser.Items.Count; ItemNum_01++)
+            {
+                DirectoryEntry DirEntry_01 = (DirectoryEntry)list_FolderBrowser.Items[ItemNum_01];
+                string DirObjName_01 = DirEntry_01.Name;
+
+                // DEBUG //
+                //if (ItemNum_01 < 2)
+                //{
+                //    Prompt = "DirObjName_01 = ''" + DirObjName_01 + "''";
+                //    MessageBox.Show(Prompt, "Media Orbit", MessageBoxButton.OK, MessageBoxImage.None);
+                //}
+
+                if (DirObjName_01.StartsWith(str_CurrentYear))
+                {
+                    text_CurrentPath.Text += "\\" + DirObjName_01;
+
+                    // Look for the current month:
+                    for (ItemNum_02 = 0; ItemNum_02 < list_FolderBrowser.Items.Count; ItemNum_02++)
+                    {
+                        DirectoryEntry DirEntry_02 = (DirectoryEntry)list_FolderBrowser.Items[ItemNum_02];
+                        string DirObjName_02 = DirEntry_02.Name;
+
+                        // DEBUG //
+                        //if (ItemNum_02 < 3)
+                        //{
+                        //    Prompt = "DirObjName_02 = ''" + DirObjName_02 + "''";
+                        //    MessageBox.Show(Prompt, "Media Orbit", MessageBoxButton.OK, MessageBoxImage.None);
+                        //}
+
+                        if (DirObjName_02.StartsWith(str_CurrentMonth))
+                        {
+                            text_CurrentPath.Text += "\\" + DirObjName_02;
+                        }
+                    }
+                }
             }
         }
 
@@ -352,6 +405,7 @@ namespace MediaOrbit
             var myLbl = new TextBox();
             myLbl.Text = (i_Pos - 2).ToString();
             DockPanel.SetDock(myLbl, Dock.Left);
+            myLbl.IsTabStop = false;
             oDockPnl_New.Children.Add(myLbl);
 
             var myBtn = new Button();
@@ -359,12 +413,14 @@ namespace MediaOrbit
             myBtn.Content = "Go";
             DockPanel.SetDock(myBtn, Dock.Right);
             myBtn.Click += btn_Go_Click;
+            myBtn.IsTabStop = false;
             oDockPnl_New.Children.Add(myBtn);
 
             var myTextBox = new TextBox();
             myTextBox.Width = 60;
             myTextBox.Text = "1";
             myTextBox.PreviewTextInput += textbox_Numeric_PreviewTextInput;
+            myTextBox.IsTabStop = false;
             oDockPnl_New.Children.Add(myTextBox);
             DockPanel.SetDock(myTextBox, Dock.Right);
 
@@ -388,7 +444,7 @@ namespace MediaOrbit
 
             // DEBUG //
             //Prompt = "Go #" + i_RowNum + "\n" + i_RowCount + "x: ''" + str_Body + "''";
-            // MessageBox.Show(Prompt, "WPF Demo", MessageBoxButton.OK, MessageBoxImage.None);
+            // MessageBox.Show(Prompt, "Media Orbit", MessageBoxButton.OK, MessageBoxImage.None);
 
             string str_FileTitle_Photo;
 
@@ -509,7 +565,7 @@ namespace MediaOrbit
                             DirectoryEntry d = new DirectoryEntry(
                                 dir.Name, dir.FullName, "<Folder>", "",
                                 Directory.GetLastWriteTime(s),
-                                "i/icon16-folder.png", EntryType.Dir
+                                "i/icon12-folder.png", EntryType.Dir
                                 );
                             subEntries.Add(d);
                         }
@@ -519,7 +575,7 @@ namespace MediaOrbit
                             DirectoryEntry d = new DirectoryEntry(
                                 file.Name, file.FullName, file.Extension, file.Length.ToString(),
                                 file.LastWriteTime,
-                                "i/icon16-file.png", EntryType.File
+                                "i/icon12-file.png", EntryType.File
                                 );
                             subEntries.Add(d);
                         }
@@ -672,16 +728,29 @@ namespace MediaOrbit
         /// </summary>
         private void CreateNewInfoFile()
         {
-            string str_PathedFileName_Info;
+            string Path_Info = "";
+            string PathedFileName_Info;
             FileInfo oFileInfo_Folder;
             string str_InfoFileText;
             int i_PhotoNum;
 
-            oFileInfo_Folder = new FileInfo(text_CurrentPath.Text);
-            str_PathedFileName_Info = NormalizePath(text_CurrentPath.Text) + "info.txt";
+            // Determine the name of the path where the file is to be created:
+            if (File.Exists(text_CurrentPath.Text))
+            {
+                Path_Info = GetParentPath(NormalizePath(text_CurrentPath.Text));
+            }
+            else if (Directory.Exists(text_CurrentPath.Text))
+            {
+                Path_Info = NormalizePath(text_CurrentPath.Text);
+            }
+
+            oFileInfo_Folder = new FileInfo(Path_Info);
+            PathedFileName_Info = NormalizePath(Path_Info) + "info.txt";
 
             // Add the first lines to the file text:
-            str_InfoFileText = oFileInfo_Folder.Directory.Parent.Name + "-" + oFileInfo_Folder.Directory.Name.Substring(0, 2) + "-" + oFileInfo_Folder.Name + "\r\n";
+            str_InfoFileText = oFileInfo_Folder.Directory.Parent.Parent.Name + "-"
+                + oFileInfo_Folder.Directory.Parent.Name.Substring(0, 2) + "-"
+                + oFileInfo_Folder.Directory.Name + "\r\n";
             str_InfoFileText = str_InfoFileText + "\r\n";
 
             // Add the rest of the lines to the file text:
@@ -848,6 +917,23 @@ namespace MediaOrbit
             }
         }
 
+        /// <summary>
+        /// Ensure that a path string does NOT end with "\".
+        /// </summary>
+        /// <param name="Path_Orig"></param>
+        /// <returns>path ending with "\"</returns>
+        private string DeNormalizePath(string Path_Orig)
+        {
+            if (Path_Orig.EndsWith("\\"))
+            {
+                return Path_Orig.Substring(0, Path_Orig.Length - 1);
+            }
+            else
+            {
+                return Path_Orig;
+            }
+        }
+
         private string GetParentPath(string Path_Orig)
         {
             string NPath_Orig = NormalizePath(Path_Orig);
@@ -871,7 +957,20 @@ namespace MediaOrbit
         {
             if (text_Info.Text.Length > 0)
             {
-                string str_PathedFileName_Info = NormalizePath(text_CurrentPath.Text) + "info.txt";
+                string Path_Info = "";
+
+                // Determine the name of the path where the file is to be created:
+                if (File.Exists(text_CurrentPath.Text))
+                {
+                    Path_Info = GetParentPath(NormalizePath(text_CurrentPath.Text));
+                }
+                else if (Directory.Exists(text_CurrentPath.Text))
+                {
+                    Path_Info = NormalizePath(text_CurrentPath.Text);
+                }
+
+                string str_PathedFileName_Info = NormalizePath(Path_Info) + "info.txt";
+
                 // Create the info.txt file if doesn't already exist:
                 FileStream fs = new FileStream(str_PathedFileName_Info, FileMode.OpenOrCreate);
                 fs.Close();
@@ -937,19 +1036,19 @@ namespace MediaOrbit
 
     public class DirectoryEntry
     {
-        private string _name;
-        private string _fullpath;
-        private string _ext;
+        private string _Name;
+        private string _PathedFileName;
+        private string _Extension;
         private string _size;
         private DateTime _date;
         private string _imagepath;
         private EntryType _type;
 
-        public DirectoryEntry(string name, string fullname, string ext, string size, DateTime date, string imagepath, EntryType type)
+        public DirectoryEntry(string Name, string PathedFileName, string Extension, string size, DateTime date, string imagepath, EntryType type)
         {
-            _name = name;
-            _fullpath = fullname;
-            _ext = ext;
+            _Name = Name;
+            _PathedFileName = PathedFileName;
+            _Extension = Extension;
             _size = size;
             _date = date;
             _imagepath = imagepath;
@@ -958,14 +1057,14 @@ namespace MediaOrbit
 
         public string Name
         {
-            get { return _name; }
-            set { _name = value; }
+            get { return _Name; }
+            set { _Name = value; }
         }
 
         public string Ext
         {
-            get { return _ext; }
-            set { _ext = value; }
+            get { return _Extension; }
+            set { _Extension = value; }
         }
 
         public string Size
@@ -994,8 +1093,8 @@ namespace MediaOrbit
 
         public string Fullpath
         {
-            get { return _fullpath; }
-            set { _fullpath = value; }
+            get { return _PathedFileName; }
+            set { _PathedFileName = value; }
         }
     }
 }
